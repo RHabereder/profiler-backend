@@ -26,14 +26,14 @@ The backend for the Profiler App
 
 ## Important Env-Vars
 
-| Var  | Default  | Usage  | 
-|---|---|---|---|---|
-| DB_HOST               | localhost                 |   |  
-| DB_PORT               | 5432                      |   |  
-| DB_DRIVER             | postgres                  |   |  
-| DB_USERNAME           | postgres                  |   |  
-| DB_PASSWORD           | myawesomepassword         |   |  
-| DB_NAME               | profiler                  |   |  
+| Var                   | Default                   | Usage     | 
+|---                    |---                        |---        |
+| DB_HOST               | localhost                 |           |  
+| DB_PORT               | 5432                      |           |  
+| DB_DRIVER             | postgres                  |           |  
+| DB_USERNAME           | postgres                  |           |  
+| DB_PASSWORD           | myawesomepassword         |           |  
+| DB_NAME               | profiler                  |           |  
 | MODE                  | development               | Legacy Remnant: Deactivates all Token-Checks  |  
 | RENDER_SERVICE_URL    | https://localhost:3001    | URL to the renderservice, only necessary for generating DOCX-Documents  |  
 
@@ -42,11 +42,31 @@ The backend for the Profiler App
 ### Filling the DB
 
 In [testdata/crud/](testdata/crud/) and [testdata/prefill/profiler](testdata/prefill/profiler/) you'll find scripts to create and fill the DB in order with necessary data.
-In [testdata/demo/](testdata/demo/) you'll find a script to generate a demo User. 
+The script [testdata/prefill/profiler/99-Create-User.sql](testdata/prefill/profiler/99-Create-User.sql) will generate a demo User. If you didn't change the Data of the demo-user don't worry about it, you'll be able to change everything (that is not the primary key) in the app after the fact. 
 
-### Actually running it
 
-Either you use `air`, `go run main.go`, or if you want to debug, you can use the following VS-Code Launch Config:
+#### Helper Script
+
+Here is a little helper I use to set up the DB in a single command: 
+
+```bash
+setupDB() {
+    psql -f testdata/crud/0-DropDB.sql
+    psql -f testdata/crud/1-CreateDB.sql
+    for f in testdata/prefill/profiler/*.sql;
+    do
+        psql -f "$f"
+    done 
+    for f in testdata/prefill/profiler/skills/*.sql;
+    do
+        psql -f "$f"
+    done 
+}
+```
+
+### Running / Debugging
+
+Either you use `air`, `go run main.go`, or if you want to **debug**, you can use the following VS-Code Launch Config:
 
 ```json
 {
